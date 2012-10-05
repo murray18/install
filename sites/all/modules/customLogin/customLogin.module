@@ -42,3 +42,8 @@ function customLogin_user_presave(&$edit, $account, $category){// Saves of_age t
 
 
 }
+function customLogin_boot(){
+    print_r('hi');
+    drupal_goto('/user/register');
+    
+}
