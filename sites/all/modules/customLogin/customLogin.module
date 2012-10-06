@@ -3,6 +3,7 @@
 *  Implements hook_form_alter
  */
 function customLogin_form_alter(&$form, &$form_state, $form_id) {
+
       if($form_id != 'user_register_form'){ // not the create account form
           return;
       }
@@ -42,8 +43,31 @@ function customLogin_user_presave(&$edit, $account, $category){// Saves of_age t
 
 
 }
-function customLogin_boot(){
-    print_r('hi');
-    drupal_goto('/user/register');
-    
+
+/*
+ * Implement hook_init()
+ * 
+ * Redirect any unregistered user to the registration page
+ */
+function customLogin_init(){
+    global $user;
+    if ( $user->uid ) {
+      // Logged in user
+    }
+    else {
+        // Not logged in, redirect to login/account creation page
+        $pageURL = (@$_SERVER["HTTPS"] == "on") ? "https://" : "http://";//get the page url
+        if ($_SERVER["SERVER_PORT"] != "80")
+        {
+            $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+        } 
+        else 
+        {
+            $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+        }
+        if($pageURL!="http://install.wavecloud.com/user/register" && $pageURL!="http://install.wavecloud.com/user" && $pageURL!="http://install.wavecloud.com/user/password"){//check to see if already on the register page (need this for redirect to even work)
+            drupal_goto('user/register');
+        }
+    }
 }
+
