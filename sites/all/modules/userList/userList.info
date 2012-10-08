@@ -1,0 +1,4 @@
+name = Custom Login
+description = Add functionality to the login page
+package = login
+core = 7.x
