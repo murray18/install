@@ -1,4 +1,9 @@
-name = Custom Login
-description = Add functionality to the login page
-package = login
+;$Id$
+name = First
+description = A first module.
+package = Drupal 7 Development
 core = 7.x
+files[] = first.module
+files[] = first.test
+;dependencies[] = autoload
+;php = 5.2
