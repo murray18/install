@@ -64,8 +64,8 @@ function customLogin_init(){
       // Logged in user
          if($user->data['of_age']){//redundant check to verify of_age is stored against the user profile
        // debug($user, true);
-             if($pageURL!="http://install.wavecloud.com/JCVD" && $pageURL!="http://install.wavecloud.com/user/register"){
-             drupal_goto('JCVD');
+             if($pageURL!="http://install.wavecloud.com/JCVD" && $pageURL!="http://install.wavecloud.com/user/register" && $pageURL !="http://install.wavecloud.com/list/users"){
+            // drupal_goto('JCVD');
              }
          }
     }

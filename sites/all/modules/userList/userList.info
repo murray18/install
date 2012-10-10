@@ -1,4 +1,4 @@
-name = Custom Login
-description = Add functionality to the login page
-package = login
+name = User List
+description = Generate a list of users
+package = development
 core = 7.x
