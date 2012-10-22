@@ -1,0 +1,140 @@
+<?php
+
+/**
+ * Generate a list of users
+ */
+
+function user_list(){
+  $sql = "SELECT status, name, mail, uid FROM users limit 100";
+  $data=array();
+  $result = db_query($sql);
+  foreach ($result as $res){
+    if ($res->status==1){
+      $data['items'][]=$res->name;
+      $data['status'][]=$res->status;
+      $data['email'][]=$res->mail;
+      $data['ID'][]=$res->uid;
+    }
+  }
+  return $data;
+}
+
+/*
+ * Build the list of users
+ */
+function build_users(){
+  $allUsers = user_list();
+  $output = theme('user_listing', $allUsers);
+  return $output;
+}
+
+/*
+ * Implement hook_permission()
+ */
+function userList_permission() {
+  return array(
+    'access user_list page' => array(
+      'title' => t('Access the list of users'),
+    )
+  );
+}
+
+/**
+ * 
+ * Implement hook_menu()
+ */
+function userList_menu(){
+    $items['list/users'] = array(
+      'title' => 'User List',
+      'page callback' => 'build_users',
+      'access arguments' => array('access user_list page'),
+      'type' => MENU_NORMAL_ITEM,
+    );
+    return $items;
+}
+
+/**
+ * Declare/Register the theme
+ */
+function userList_theme(){
+  return array(
+    'user_listing' => array(
+      'variables' => array(
+        'items' => array(),
+        'title' => 'User Listing',
+        'type' => 'ul',
+        'attributes' => array(),
+      ),
+     ),
+  );
+}
+
+///**
+// * Define
+// */
+function theme_user_listing($variables){
+  $items = $variables['items'];
+  $title = $variables['title'];
+  $type = $variables['type'];
+  $attributes = $variables['attributes'];
+  $email = $variables['email'];
+  $uid = $variables['ID'];
+  $output = '<div class="user_listing">';
+  if (isset($title) && $title !== '') {
+    $output .= '<h3>' . 'List of all the users' . '</h3>';
+  }
+
+  if (!empty($items)) {
+    $output .= "<$type" . drupal_attributes($attributes) . '>';
+    $num_items = count($items);
+    foreach ($items as $i => $item) {
+      $attributes = array();
+      $children = array();
+      $data = '';
+      if (is_array($item)) {
+       $i=0;
+        foreach ($item as $key => $value) {
+          if ($key == 'data') {
+            $data = $value;
+          }
+          elseif ($key == 'children') {
+            $children = $value;
+          }
+          else {
+            $attributes[$key] = $value;
+          }
+        }
+      }
+      else {
+        $data = $item;
+      }
+      if (count($children) > 0) {
+        // Render nested list.
+        $data .= theme_user_listing(array('items' => $children, 'title' => NULL, 'type' => $type, 'attributes' => $attributes));
+      }
+      if ($i == 0) {
+        $attributes['class'][] = 'first';
+      }
+      if ($i == $num_items - 1) {
+        $attributes['class'][] = 'last';
+      }
+      $attributes['class'][] = 'list_items';
+      $output .= '<li' . drupal_attributes($attributes) . '><a href="/user/' . $uid[$i] . '#overlay-context=list/users' . '" >' . $data . "</a></li>\n";
+      $output .= '<p>email - ' . $email[$i] . '</p>';
+      $i++;
+    }
+    $output .= "</$type>";
+  }
+  $output .= '</div>';
+  return $output;
+}
+
+/*
+ * Implement hook_preprocess_HOOK
+ * Add CSS and other attributes to userList
+ */
+function userList_preprocess_user_listing(&$variables){
+  $variables['attributes']['style'] = array('list-style-type:none');
+  $variables['attributes']['class'][] = 'hi';
+  drupal_add_css(drupal_get_path('module', 'userLIst') . '/userList.css', array('group' => CSS_DEFAULT, 'type' => 'file'));
+  }
